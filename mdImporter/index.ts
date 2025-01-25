@@ -1,8 +1,14 @@
 import * as fs from "fs";
 import { join, sep } from "path";
 import { Mongo } from "./mongodb";
+import { config } from "dotenv";
 function main() {
-  const m = new Mongo("mongodb://120.53.232.99:27017/", "hawtin-blog", "blogs");
+  config();
+  const m = new Mongo(
+    process.env.dbUri,
+    process.env.hawtinBlog,
+    process.env.collectionName
+  );
 
   const args = process.argv.slice(2);
   const path = args[0];

@@ -5,6 +5,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "mongodb": "^6.12.0",
     "ts-node": "^10.9.2"
   }
