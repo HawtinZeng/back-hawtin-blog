@@ -1,0 +1,4 @@
+# For running
+npx ts-node .\index.ts ..\..\hawtin-blog\src\content\
+
+Explain: pass the directory or file into `./index.ts`
