@@ -7,6 +7,11 @@ const server = fastify({
   logger: !!(process.env.NODE_ENV !== "development"),
 });
 
+server.setErrorHandler((error, request, reply) => {
+  console.error("error");
+  reply.status(500).send({ message: error.message });
+});
+
 // Middleware: Router
 server.register(router);
 

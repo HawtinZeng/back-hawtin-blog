@@ -32,6 +32,7 @@ export default async function userController(fastify: FastifyInstance) {
         const name = radomName.generate();
         connection.collection.insertOne({ ip: ip, location, name });
 
+        connection.close();
         reply
           .header("Content-Type", "application/json")
           .send({ userInfo: { ip: ip, location } });
