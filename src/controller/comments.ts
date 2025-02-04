@@ -98,24 +98,31 @@ export default async function commentsController(fastify: FastifyInstance) {
       function pushChildren(child: any, destination: any[]) {
         child.comments.forEach((id: string) => {
           const c = notRootsMap.get(id);
-          destination.push(c);
-          notRootsMap.delete(id);
-          pushChildren(c, destination);
+          console.error(c);
+          if (c) {
+            destination.push(c);
+            notRootsMap.delete(id);
+            pushChildren(c, destination);
+          }
         });
       }
 
-      roots.map((r) => {
-        const nestedComments = r.comments;
-        sortedComments.push(r);
-        nestedComments?.forEach((id: string) => {
-          const child = notRootsMap.get(id);
-          if (child) {
-            sortedComments.push(child);
-            pushChildren(child, sortedComments);
-            notRootsMap.delete(id);
-          }
+      try {
+        roots.map((r) => {
+          const nestedComments = r.comments;
+          sortedComments.push(r);
+          nestedComments?.forEach((id: string) => {
+            const child = notRootsMap.get(id);
+            if (child) {
+              sortedComments.push(child);
+              pushChildren(child, sortedComments);
+              notRootsMap.delete(id);
+            }
+          });
         });
-      });
+      } catch (e) {
+        console.log(e);
+      }
 
       reply.send(sortedComments);
     }

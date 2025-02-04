@@ -87,7 +87,7 @@ function main() {
   });
 }
 
-function traversalFiles(path) {
+export function traversalFiles(path) {
   const stats = fs.statSync(path);
   if (stats.isDirectory()) {
     const files = fs.readdirSync(path);
