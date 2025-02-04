@@ -13,6 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@fastify/cors": "^10.0.2",
+    "@types/geoip-lite": "^1.4.4",
     "@types/lodash": "^4.17.15",
     "chinese-random-name": "^2.0.1",
     "dotenv": "^16.4.7",

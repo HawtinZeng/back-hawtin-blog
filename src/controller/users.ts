@@ -1,5 +1,4 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-// @ts-ignore
 import geoip from "geoip-lite";
 import { Mongo } from "../../shared/mongodb";
 // @ts-ignore
@@ -8,7 +7,8 @@ export default async function userController(fastify: FastifyInstance) {
   fastify.post(
     "/user",
     async function (_request: FastifyRequest, reply: FastifyReply) {
-      const ip = _request.ip;
+      const ip =
+        (_request.raw.headers["x-forwarded-for"] as string) ?? _request.ip;
 
       const connection = new Mongo(
         process.env.dbUri!,
@@ -17,16 +17,18 @@ export default async function userController(fastify: FastifyInstance) {
         process.env.bucketName!
       );
       const userExists = await connection.collection.findOne({ ip: ip });
+
       if (userExists) {
         reply
           .header("Content-Type", "application/json")
           .send({ userInfo: userExists });
       } else {
         let location = "";
-        if (ip === "::1") {
+        if (ip === "127.0.0.1") {
           location = "local";
         } else {
-          location = geoip.lookup(ip);
+          const loc = geoip.lookup(ip);
+          location = `${loc?.country ?? "国家"}-${loc?.city ?? "城市"}`;
         }
 
         const name = radomName.generate();

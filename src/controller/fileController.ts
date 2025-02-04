@@ -4,7 +4,8 @@ import { Mongo } from "../../shared/mongodb";
 export default async function fileController(fastify: FastifyInstance) {
   fastify.get(
     "/visuals/:name",
-    function (_request: FastifyRequest, reply: FastifyReply) {
+    // @ts-ignore
+    async function (_request: FastifyRequest, reply: FastifyReply) {
       const { name } = _request.params as any;
 
       const connection = new Mongo(
@@ -16,15 +17,18 @@ export default async function fileController(fastify: FastifyInstance) {
 
       const b = connection.newBucket();
       const s = b.openDownloadStreamByName(name);
-      s.on("end", () => {
+      s.on("error", (e) => {
+        reply.status(500).send({ message: e.message, ok: false });
+      }).on("end", () => {
         connection.close();
       });
-      s.pipe(reply.raw);
+      return s;
     }
   );
 
   fastify.get(
     "/pkgs/:name",
+    // @ts-ignore
     async function (_request: FastifyRequest, reply: FastifyReply) {
       const { name } = _request.params as any;
 
@@ -34,16 +38,18 @@ export default async function fileController(fastify: FastifyInstance) {
         process.env.collectionName!,
         "pkgs"
       );
-
       const b = connection.newBucket();
       const s = b.openDownloadStreamByName(name);
       const fileInfoCursor = b.find({ filename: name });
       const fileInfo = await fileInfoCursor.next();
       if (fileInfo?.length) reply.header("content-length", fileInfo.length);
 
-      s.on("end", () => {
+      s.on("error", (e) => {
+        reply.status(500).send({ message: e.message, ok: false });
+      }).on("end", () => {
         connection.close();
       });
+
       return s;
     }
   );

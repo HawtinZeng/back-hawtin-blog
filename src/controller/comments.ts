@@ -69,6 +69,9 @@ export default async function commentsController(fastify: FastifyInstance) {
               as: "userInfo",
             },
           },
+          {
+            $unwind: "$userInfo",
+          },
         ])
         .toArray();
 
