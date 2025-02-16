@@ -17,8 +17,6 @@ export default async function userController(fastify: FastifyInstance) {
         process.env.bucketName!
       );
       const userExists = await connection.collection.findOne({ ip: ip });
-      console.log(ip);
-      console.log(userExists);
 
       if (userExists) {
         reply

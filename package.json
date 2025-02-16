@@ -18,6 +18,7 @@
     "chinese-random-name": "^2.0.1",
     "dotenv": "^16.4.7",
     "fastify": "^5.2.1",
+    "fastify-piscina": "^5.0.0",
     "geoip-lite": "^1.4.10",
     "lodash": "^4.17.21",
     "mongodb": "^6.12.0",

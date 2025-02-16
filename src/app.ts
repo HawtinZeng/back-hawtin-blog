@@ -16,7 +16,6 @@ server.setErrorHandler((error, request, reply) => {
 
 // Middleware: Router
 server.register(router);
-
 server.register(cors, {
   origin: "*",
 });
