@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Build and Deploy
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
@@ -20,15 +20,17 @@ jobs:
           command_timeout: 30m
           script: |
             cd /home/ubuntu/deployment/
-            if [ ! -d "my-repo" ]; then
+            if [ ! -d "back-hawtin-blog" ]; then
               git clone --depth=1 https://github.com/HawtinZeng/back-hawtin-blog
               cd back-hawtin-blog
             else
               cd back-hawtin-blog
-              git pull
+              git fetch origin main
+              git reset --hard origin/main
             fi
-            sudo su
-            docker rm -f back-blog
-            docker rmi  back-blog
-            docker build --build-arg dbUri=mongodb://120.53.232.99:10000/ --build-arg bucketName=visuals --build-arg databaseName=hawtin-blog --build-arg collectionName=blogs -t back-blog .
-            docker run --restart -d -u root --name back-blog --network=host back-blog
+            whoami
+            sudo docker ps
+            sudo  docker rm -f back-blog
+            sudo docker rmi  back-blog
+            sudo docker build --build-arg dbUri=mongodb://120.53.232.99:10000/ --build-arg bucketName=visuals --build-arg databaseName=hawtin-blog --build-arg collectionName=blogs -t back-blog .
+            sudo docker run -d --restart always -u root --name back-blog --network=host back-blog

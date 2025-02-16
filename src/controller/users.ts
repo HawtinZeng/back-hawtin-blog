@@ -38,7 +38,11 @@ export default async function userController(fastify: FastifyInstance) {
         console.log(`insert ${ip}`);
         console.log(`name: ${name}`);
 
-        connection.collection.insertOne({ ip: ip, location, name });
+        try {
+          connection.collection.insertOne({ ip: ip, location, name });
+        } catch (err) {
+          console.log(err);
+        }
 
         connection.close();
         reply
