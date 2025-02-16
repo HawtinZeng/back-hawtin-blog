@@ -1,0 +1,34 @@
+name: Deploy Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build and Deploy
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          command_timeout: 30m
+          script: |
+            cd /home/ubuntu/deployment/
+            if [ ! -d "my-repo" ]; then
+              git clone --depth=1 https://github.com/HawtinZeng/back-hawtin-blog
+              cd back-hawtin-blog
+            else
+              cd back-hawtin-blog
+              git pull
+            fi
+            sudo su
+            docker rm -f back-blog
+            docker rmi  back-blog
+            docker build --build-arg dbUri=mongodb://120.53.232.99:10000/ --build-arg bucketName=visuals --build-arg databaseName=hawtin-blog --build-arg collectionName=blogs -t back-blog .
+            docker run --restart -d -u root --name back-blog --network=host back-blog
