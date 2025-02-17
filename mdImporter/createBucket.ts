@@ -13,7 +13,6 @@ function main() {
   });
   const bucketPkg = new GridFSBucket(db, {
     bucketName: "pkgs", // Customize bucket name (defaults to 'fs')
-    chunkSizeBytes: 5 * 1024 * 1024, // Customize chunk size (default is 255KB)
   });
 
   const args = process.argv.slice(2);

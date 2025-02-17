@@ -1,3 +1,4 @@
+// import * as fs from "node:fs";
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { Mongo } from "../../shared/mongodb";
 
@@ -7,8 +8,10 @@ export default async function fileController(fastify: FastifyInstance) {
     // @ts-ignore
     async function (_request: FastifyRequest, reply: FastifyReply) {
       const { name } = _request.params as any;
-      const range = _request.headers["range"];
-      if (!range) return;
+      let range = _request.headers["range"];
+      if (!range) {
+        range = "bytes 0-";
+      }
 
       const connection = new Mongo(
         process.env.dbUri!,
@@ -20,33 +23,27 @@ export default async function fileController(fastify: FastifyInstance) {
       const fileInfoCursor = b.find({ filename: name });
       const fileInfo = await fileInfoCursor.next();
       if (fileInfo === null) reply.status(404).send({ isOk: false });
-      console.log(name);
       if ((name as string).endsWith("mp4")) {
-        const totalSize = fileInfo!.length;
-        const chunkSize = 1024 * 500; // 500 k
+        const video = fileInfo!;
+        const videoSize = video.length;
+        const CHUNK_SIZE = 2 * 1e6; // 2M
+        const start = Number(range.replace(/\D/g, ""));
+        const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
 
-        const parts = range.replace(/bytes=/, "").split(/-|\//);
-        const start = Number(parts[0]);
-        let end = parts[1] === "" ? Number(chunkSize - 1) : Number(parts[1]);
-        end = Math.min(start + chunkSize - 1, totalSize - 1);
-
+        const contentLength = end - start + 1;
         reply.headers({
-          "Accept-Ranges": "bytes",
-          "Content-Range": `bytes ${start}-${end}/${totalSize}`,
-          "Content-Length": end - start + 1,
+          "content-range": `bytes ${start}-${end}/${videoSize}`,
+          "accept-ranges": "bytes",
+          "content-length": contentLength,
+          "content-type": "video/mp4",
         });
-
-        // Send a 206 Partial Content status code
         reply.code(206);
-        reply.type("video/mp4");
-        const s = b.openDownloadStreamByName(name, { start, end });
-        console.log(start, end);
-        s.on("error", (e) => {
-          reply.status(500).send({ message: e.message, ok: false });
-        }).on("end", () => {
-          connection.close();
+
+        const downloadStream = b.openDownloadStream(video._id, {
+          start,
+          end: end + 1, // end is not included, so we use end + 1 to include the last byte
         });
-        return s;
+        return downloadStream;
       } else {
         const s = b.openDownloadStreamByName(name);
         s.on("error", (e) => {
