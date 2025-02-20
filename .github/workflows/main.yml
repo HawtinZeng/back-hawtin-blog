@@ -28,7 +28,6 @@ jobs:
               git fetch origin main
               git reset --hard origin/main
             fi
-            whoami
             sudo docker ps
             sudo  docker rm -f back-blog
             sudo docker rmi  back-blog

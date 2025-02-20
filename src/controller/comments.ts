@@ -10,6 +10,7 @@ import { ObjectId } from "mongodb";
 export default async function commentsController(fastify: FastifyInstance) {
   fastify.post(
     "/comment",
+    { bodyLimit: 10 * 1024 * 1024 },
     async function (_request: FastifyRequest, reply: FastifyReply) {
       const connection = new Mongo(
         process.env.dbUri!,

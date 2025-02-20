@@ -6,6 +6,7 @@ console.log(`listen ${FASTIFY_PORT}`);
 
 // @ts-ignore
 app.setErrorHandler((error, request, reply) => {
+  console.log(error);
   reply.status(500).send({ ok: false });
 });
 
