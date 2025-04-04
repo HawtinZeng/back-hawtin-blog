@@ -26,10 +26,13 @@ export default async function fileController(fastify: FastifyInstance) {
       if ((name as string).endsWith("mp4")) {
         const video = fileInfo!;
         const videoSize = video.length;
-        const CHUNK_SIZE = 2 * 1e6; // 2M
+        const CHUNK_SIZE = 0.5 * 1e6; // 0.5 M
         const start = Number(range.replace(/\D/g, ""));
         const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
 
+        console.log("end - start")
+        console.log(end - start)
+        
         const contentLength = end - start + 1;
         reply.headers({
           "content-range": `bytes ${start}-${end}/${videoSize}`,
@@ -38,7 +41,6 @@ export default async function fileController(fastify: FastifyInstance) {
           "content-type": "video/mp4",
         });
         reply.code(206);
-
         const downloadStream = b.openDownloadStream(video._id, {
           start,
           end: end + 1, // end is not included, so we use end + 1 to include the last byte

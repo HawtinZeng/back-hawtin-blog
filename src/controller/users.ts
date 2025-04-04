@@ -9,7 +9,6 @@ export default async function userController(fastify: FastifyInstance) {
     async function (_request: FastifyRequest, reply: FastifyReply) {
       const ip =
         (_request.raw.headers["x-forwarded-for"] as string) ?? _request.ip;
-
       const connection = new Mongo(
         process.env.dbUri!,
         process.env.databaseName!,
