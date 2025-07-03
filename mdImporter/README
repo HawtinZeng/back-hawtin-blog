@@ -5,3 +5,7 @@ Navicat for mongodb cannot import markdown file directly, so I made mdImporter, 
 npx ts-node .\index.ts ..\..\hawtin-blog\src\content\
 
 Explain: pass the directory or file into `./index.ts`
+
+# For dev
+1. npm run watch.
+2. npm run dev

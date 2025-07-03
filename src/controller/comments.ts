@@ -70,12 +70,8 @@ export default async function commentsController(fastify: FastifyInstance) {
               as: "userInfo",
             },
           },
-          {
-            $unwind: "$userInfo",
-          },
         ])
         .toArray();
-
       const additionalFields = comments.map((c) => {
         c.canDel = c.author === clientIp;
         c.checked = c.likes.includes(clientIp);
