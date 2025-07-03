@@ -10,4 +10,4 @@ app.setErrorHandler((error, request, reply) => {
   reply.status(500).send({ ok: false });
 });
 
-app.listen({ host: "127.0.0.1", port: FASTIFY_PORT });
+app.listen({ host: "0.0.0.0", port: FASTIFY_PORT });
