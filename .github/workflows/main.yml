@@ -19,7 +19,7 @@ jobs:
           port: ${{ secrets.PORT }}
           command_timeout: 30m
           script: |
-            cd /home/ubuntu/deployment/
+            cd /home/
             if [ ! -d "back-hawtin-blog" ]; then
               git clone --depth=1 https://github.com/HawtinZeng/back-hawtin-blog
               cd back-hawtin-blog
@@ -31,5 +31,5 @@ jobs:
             sudo docker ps
             sudo  docker rm -f back-blog
             sudo docker rmi  back-blog
-            sudo docker build --build-arg dbUri=mongodb://120.53.232.99:10000/ --build-arg bucketName=visuals --build-arg databaseName=hawtin-blog --build-arg collectionName=blogs -t back-blog .
+            sudo docker build --build-arg dbUri=mongodb://localhost:27017/ --build-arg bucketName=visuals --build-arg databaseName=hawtin-blog --build-arg collectionName=blogs -t back-blog .
             sudo docker run -d --restart always -u root --name back-blog --network=host back-blog
