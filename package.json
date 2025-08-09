@@ -6,7 +6,7 @@
     "watch": "tsc --watch --preserveWatchOutput --pretty",
     "dev": "cross-env NODE_ENV=development nodemon",
     "format": "prettier --write \"src/**/*.ts\"",
-    "build": "tsc",
+    "build": "rimraf dist && tsc",
     "start": "node dist/src/index.js"
   },
   "author": "Matschik <mathieu.schimmerling@protonmail.com>",
